@@ -75,7 +75,7 @@ router.post(
           oldResume.public_id,
 
           {
-            resource_type: "auto",
+            resource_type: "raw",
           }
 
         );
@@ -100,24 +100,18 @@ router.post(
 
             folder: "resume",
 
-            resource_type: "auto",
+            resource_type: "raw",
 
             public_id:
-              "Adarsh_Dubey_Resume",
-
-            format: "pdf",
+              "Adarsh_Dubey_Resume.pdf",
 
             overwrite: true,
-
-            use_filename: true,
-
-            unique_filename: false,
 
           }
 
         );
 
-      // ================= DIRECT PDF URL =================
+      // ================= CLEAN PDF URL =================
       const pdfUrl =
         result.secure_url;
 
@@ -242,7 +236,7 @@ router.delete(
         resume.public_id,
 
         {
-          resource_type: "auto",
+          resource_type: "raw",
         }
 
       );
