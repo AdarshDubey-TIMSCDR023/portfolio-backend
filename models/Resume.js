@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const resumeSchema = new mongoose.Schema(
+
   {
     title: {
       type: String,
@@ -17,10 +18,19 @@ const resumeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    fileName: {
+      type: String,
+      default:
+        "Adarsh_Dubey_Resume.pdf",
+    },
+
   },
+
   {
     timestamps: true,
   }
+
 );
 
 module.exports = mongoose.model(
