@@ -47,7 +47,7 @@ router.post(
 
       }
 
-      // PDF VALIDATION
+      // ================= PDF VALIDATION =================
       if (
         req.file.mimetype !==
         "application/pdf"
@@ -75,7 +75,7 @@ router.post(
           oldResume.public_id,
 
           {
-            resource_type: "raw",
+            resource_type: "auto",
           }
 
         );
@@ -86,7 +86,7 @@ router.post(
 
       }
 
-      // ================= BASE64 =================
+      // ================= BASE64 PDF =================
       const fileBase64 =
         `data:application/pdf;base64,${req.file.buffer.toString("base64")}`;
 
@@ -100,7 +100,7 @@ router.post(
 
             folder: "resume",
 
-            resource_type: "raw",
+            resource_type: "auto",
 
             public_id:
               "Adarsh_Dubey_Resume",
@@ -117,12 +117,9 @@ router.post(
 
         );
 
-      // ================= PDF DOWNLOAD URL =================
+      // ================= DIRECT PDF URL =================
       const pdfUrl =
-        result.secure_url.replace(
-          "/upload/",
-          "/upload/fl_attachment/"
-        );
+        result.secure_url;
 
       // ================= SAVE DATABASE =================
       const resume =
@@ -153,6 +150,8 @@ router.post(
       });
 
     } catch (error) {
+
+      console.log(error);
 
       res.status(500).json({
 
@@ -237,18 +236,18 @@ router.delete(
 
       }
 
-      // DELETE CLOUDINARY FILE
+      // ================= DELETE CLOUDINARY FILE =================
       await cloudinary.uploader.destroy(
 
         resume.public_id,
 
         {
-          resource_type: "raw",
+          resource_type: "auto",
         }
 
       );
 
-      // DELETE DATABASE
+      // ================= DELETE DATABASE =================
       await Resume.findByIdAndDelete(
         req.params.id
       );
