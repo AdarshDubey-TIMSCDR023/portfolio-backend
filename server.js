@@ -45,6 +45,7 @@ app.use(
 
 // ================= DATABASE CONNECTION =================
 const connectDB = async () => {
+
   try {
 
     await mongoose.connect(
@@ -67,8 +68,6 @@ const connectDB = async () => {
   }
 };
 
-connectDB();
-
 
 // ================= HOME ROUTE =================
 app.get("/", (req, res) => {
@@ -88,6 +87,18 @@ app.get("/api/test", (req, res) => {
     success: true,
     message:
       "✅ API Working Successfully",
+  });
+});
+
+
+// ================= HEALTH ROUTE =================
+app.get("/api/health", (req, res) => {
+
+  res.status(200).json({
+    success: true,
+    status: "Healthy",
+    uptime: process.uptime(),
+    timestamp: new Date(),
   });
 });
 
@@ -223,18 +234,6 @@ app.use(
 );
 
 
-// ================= HEALTH CHECK =================
-app.get("/api/health", (req, res) => {
-
-  res.status(200).json({
-    success: true,
-    message: "Server Healthy ✅",
-    uptime: process.uptime(),
-    timestamp: new Date(),
-  });
-});
-
-
 // ================= 404 ROUTE =================
 app.use((req, res) => {
 
@@ -269,10 +268,17 @@ const PORT =
   process.env.PORT || 5000;
 
 
-// ================= SERVER =================
-app.listen(PORT, () => {
+// ================= START SERVER =================
+const startServer = async () => {
 
-  console.log(
-    `🚀 Server Running on Port ${PORT}`
-  );
-});
+  await connectDB();
+
+  app.listen(PORT, () => {
+
+    console.log(
+      `🚀 Server Running on Port ${PORT}`
+    );
+  });
+};
+
+startServer();
