@@ -109,8 +109,19 @@ router.post(
 
             overwrite: true,
 
+            use_filename: true,
+
+            unique_filename: false,
+
           }
 
+        );
+
+      // ================= PDF DOWNLOAD URL =================
+      const pdfUrl =
+        result.secure_url.replace(
+          "/upload/",
+          "/upload/fl_attachment/"
         );
 
       // ================= SAVE DATABASE =================
@@ -119,8 +130,7 @@ router.post(
 
           title,
 
-          resumeUrl:
-            result.secure_url,
+          resumeUrl: pdfUrl,
 
           public_id:
             result.public_id,
