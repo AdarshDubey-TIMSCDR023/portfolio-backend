@@ -33,10 +33,6 @@ router.post(
 
     try {
 
-      console.log(req.body);
-
-      console.log(req.file);
-
       const {
         title,
         description,
@@ -65,7 +61,7 @@ router.post(
       const fileBase64 =
         `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
 
-      // ================= CLOUDINARY UPLOAD =================
+      // ================= CLOUDINARY =================
 
       const result =
         await cloudinary.uploader.upload(
@@ -124,6 +120,171 @@ router.post(
           "✅ Project Uploaded Successfully",
 
         data: project,
+
+      });
+
+    } catch (error) {
+
+      console.log(error);
+
+      res.status(500).json({
+
+        success: false,
+
+        error: error.message,
+
+      });
+
+    }
+
+  }
+
+);
+
+
+// ================= UPDATE PROJECT =================
+
+router.put(
+
+  "/:id",
+
+  upload.single("image"),
+
+  async (req, res) => {
+
+    try {
+
+      const {
+        title,
+        description,
+        githubLink,
+        liveLink,
+        techStack,
+      } = req.body;
+
+      // ================= FIND PROJECT =================
+
+      const project =
+        await Project.findById(
+          req.params.id
+        );
+
+      if (!project) {
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "Project not found",
+
+        });
+
+      }
+
+      // ================= DEFAULT VALUES =================
+
+      let imageUrl =
+        project.imageUrl;
+
+      let public_id =
+        project.public_id;
+
+      // ================= UPDATE IMAGE =================
+
+      if (req.file) {
+
+        // DELETE OLD IMAGE
+
+        await cloudinary.uploader.destroy(
+
+          project.public_id,
+
+          {
+            resource_type: "image",
+          }
+
+        );
+
+        // NEW IMAGE BASE64
+
+        const fileBase64 =
+          `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+
+        // UPLOAD NEW IMAGE
+
+        const result =
+          await cloudinary.uploader.upload(
+
+            fileBase64,
+
+            {
+
+              folder: "projects",
+
+              resource_type:
+                "image",
+
+            }
+
+          );
+
+        imageUrl =
+          result.secure_url;
+
+        public_id =
+          result.public_id;
+
+      }
+
+      // ================= UPDATE DATABASE =================
+
+      const updatedProject =
+        await Project.findByIdAndUpdate(
+
+          req.params.id,
+
+          {
+
+            title:
+              title || project.title,
+
+            description:
+              description || project.description,
+
+            githubLink:
+              githubLink || project.githubLink,
+
+            liveLink:
+              liveLink || project.liveLink,
+
+            techStack:
+              techStack
+                ? techStack.split(",")
+                : project.techStack,
+
+            imageUrl,
+
+            public_id,
+
+          },
+
+          {
+            new: true,
+          }
+
+        );
+
+      // ================= RESPONSE =================
+
+      res.status(200).json({
+
+        success: true,
+
+        message:
+          "✅ Project Updated Successfully",
+
+        data: updatedProject,
 
       });
 
@@ -231,7 +392,7 @@ router.delete(
 
       );
 
-      // ================= DELETE DB =================
+      // ================= DELETE DATABASE =================
 
       await Project.findByIdAndDelete(
         req.params.id
